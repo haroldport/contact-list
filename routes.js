@@ -1,5 +1,5 @@
 import React from 'react'
-import { createBottomTabNavigator, createStackNavigator } from 'react-navigation'
+import { createDrawerNavigator, createStackNavigator } from 'react-navigation'
 import { MaterialIcons } from '@expo/vector-icons'
 
 import Contacts from './screens/Contacts'
@@ -10,8 +10,8 @@ import Options from './screens/Options'
 
 import colors from './utils/colors'
 
-const getTabBarIcon = icon => ({ tintColor }) => (
-    <MaterialIcons name={icon} size={26} style={{ color: tintColor }} />
+const getDrawerItemIcon = icon => ({ tintColor }) => (
+    <MaterialIcons name={icon} size={22} style={{ color: tintColor }} />
 )
 
 const ContactsScreens = createStackNavigator(
@@ -57,23 +57,23 @@ const UserScreens = createStackNavigator(
     },
 )
 
-export default createBottomTabNavigator({
+export default createDrawerNavigator({
     Contacts: {
         screen: ContactsScreens,
         navigationOptions: {
-            tabBarIcon: getTabBarIcon('list'),
+            drawerIcon: getDrawerItemIcon('list'),
         },
     },
     Favorites: {
         screen: FavoritesScreens,
         navigationOptions: {
-            tabBarIcon: getTabBarIcon('star'),
+            drawerIcon: getDrawerItemIcon('star'),
         },
     },
     User: {
         screen: UserScreens,
         navigationOptions: {
-            tabBarIcon: getTabBarIcon('person'),
+            drawerIcon: getDrawerItemIcon('person'),
         },
     }
 },
