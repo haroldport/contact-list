@@ -11,6 +11,7 @@ import colors from '../utils/colors'
 export default class Profile extends Component {
 
     static navigationOptions = ({ navigation: {state: { params }}}) => {
+        console.log(params)
         const { contact: { name } } = params
         return {
             title: name.split(' ')[0],
