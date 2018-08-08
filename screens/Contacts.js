@@ -10,6 +10,7 @@ import {
 import ContactListItem from '../components/ContactListItem'
 
 import { fetchContacts } from '../utils/api'
+import store from '../store'
 
 const keyExtractor = ({ phone }) => phone
 
@@ -20,26 +21,27 @@ export default class Contacts extends Component {
     }
 
     state = {
-        contacts: [],
-        loading: true,
-        error: false,
+        contacts: store.getState().contacts,
+        loading: store.getState().isFetchingContacts,
+        error: store.getState().error,
     }
 
     async componentDidMount() {
-        try {
-            const contacts = await fetchContacts()
+        this.unsubscribe = store.onChange(() =>
+            this.setState({
+                contacts: store.getState().contacts,
+                loading: store.getState().isFetchingContacts,
+                error: store.getState().error,
+            })
+        )
 
-            this.setState({
-                contacts,
-                loading: false,
-                error: false,
-            })
-        } catch(e) {
-            this.setState({
-                loading: false,
-                error: true,
-            })
-        }
+        const contacts = await fetchContacts()
+
+        store.setState({ contacts, isFetchingContacts: false })
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe()
     }
 
     renderContact = ({ item }) => {

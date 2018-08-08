@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 
 import { fetchContacts } from '../utils/api'
+import store from '../store'
 
 import ContactThumbnail from '../components/ContactThumbnail'
 
@@ -20,26 +21,29 @@ export default class Favorites extends Component {
     }
 
     state = {
-        contacts: [],
-        loading: true,
-        error: false,
+        contacts: store.getState().contacts,
+        loading: store.getState().isFetchingContacts,
+        error: store.getState().error,
     }
 
     async componentDidMount() {
-        try {
-            const contacts = await fetchContacts()
-            
+        const contacts = this.state
+        this.unsubscribe = store.onChange(() =>
             this.setState({
-                contacts,
-                loading: false,
-                error: false,
+                contacts: store.getState().contacts,
+                loading: store.getState().isFetchingContacts,
+                error: store.getState().error,
             })
-        } catch (e) {
-            this.setState({
-                loading: false,
-                error: true,
-            })
-        }
+        )
+
+        if (contacts.length === 0) {
+            const fetchedContacts = await fetchContacts()
+            store.setState({ contacts: fetchedContacts, isFetchingContacts: false })
+        } 
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe()
     }
 
     renderFavoriteThumbnail = ({ item }) => {
@@ -61,7 +65,7 @@ export default class Favorites extends Component {
         return(
             <View style={styles.container}>
                 { loading && <ActivityIndicator size="large" /> }
-                { error && <Text></Text> }
+                { error && <Text>Error...</Text> }
                 {
                     !loading &&
                     !error && (
